@@ -34,7 +34,7 @@ They use the [passport-jwt](https://www.passportjs.org/packages/passport-jwt/) s
 
 Unfortunately, jsonwebtoken does not support encrypted JWT payloads.
 
-Fortunately, the [jose](https://github.com/panva/jose) project DOES support encrpyted JWTs!
+Fortunately, the [jose](https://github.com/panva/jose) project DOES support encrypted JWTs!
 
 Unfortunately, there isn't a convenient jose wrapper like passport-jose or similar so I had to write my own.
 
