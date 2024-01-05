@@ -130,8 +130,6 @@ export class JweStrategy extends PassportStrategy(Strategy) {
         // 2024.01.04 bd: could throw here if iat is too old
         // payload is {"email":null,"scope":null,"sub":1,"iat":1700643660,"exp":1700653740,"iss":"biz.wvcc.web-api"}
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
         return {
             email: payload.email,
             id: payload.sub,
