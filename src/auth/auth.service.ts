@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import isEmail from 'validator/lib/isEmail';
 import { isPasswordMatched } from 'src/common/utilities/password.utilities';
 import { UsersService } from 'src/users/users.service';
-import { JweService } from 'src/jwe/jwe.service';
+import { JweService } from 'src/auth/jwe/jwe.service';
 
 @Injectable()
 export class AuthService {

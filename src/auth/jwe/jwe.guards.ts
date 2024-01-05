@@ -2,7 +2,7 @@ import { APP_GUARD, Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
-import { JweService } from 'src/jwe/jwe.service';
+import { JweService } from 'src/auth/jwe/jwe.service';
 import { Observable } from 'rxjs';
 
 // https://docs.nestjs.com/recipes/passport#enable-authentication-globally
