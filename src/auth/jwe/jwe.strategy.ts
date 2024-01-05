@@ -1,5 +1,5 @@
 // https://advancedweb.hu/how-to-sign-verify-and-encrypt-jwts-in-node/
-// https://github.com/panva/jose/tree/main/docs
+// https://giub.com/panva/jose/tree/main/docs
 
 import {
     BadRequestException,
@@ -128,7 +128,6 @@ export class JweStrategy extends PassportStrategy(Strategy) {
         _request: Request,
     ) {
         // 2024.01.04 bd: could throw here if iat is too old
-        // payload is {"email":null,"scope":null,"sub":1,"iat":1700643660,"exp":1700653740,"iss":"biz.wvcc.web-api"}
 
         return {
             email: payload.email,

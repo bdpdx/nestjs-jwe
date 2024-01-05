@@ -61,7 +61,7 @@ export class EnvironmentVariables {
     DB_USERNAME = '';
 
     @IsNotEmpty()
-    DEFAULT_USER_EMAIL = 'admin@wvcc.biz';
+    DEFAULT_USER_EMAIL = 'admin@example.com';
 
     @IsNotEmpty()
     DEFAULT_USER_PASSWORD = 'admin';
