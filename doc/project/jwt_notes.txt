@@ -1,0 +1,47 @@
+Invalidating JSON Web Tokens
+https://stackoverflow.com/questions/21978658/invalidating-json-web-tokens
+
+How to destroy JWT Tokens on logout?
+https://stackoverflow.com/questions/37959945/how-to-destroy-jwt-tokens-on-logout
+
+Logout/invalidate a JWT
+https://stackoverflow.com/questions/21871029/logout-invalidate-a-jwt
+
+Invalidating Jwt Token without a blacklist
+https://stackoverflow.com/questions/70772020/invalidating-jwt-token-without-a-blacklist
+
+https://www.loginradius.com/blog/engineering/invalidating-jwt/
+
+https://community.auth0.com/t/invalidating-an-access-token-after-user-logout/101398
+
+// discusses iat and counter
+https://medium.com/@mmichaelb/5-different-approaches-to-invalidate-json-web-tokens-e4cc4e027343
+
+// NestJS JWT Authentication with Refresh Tokens Complete Guide
+https://www.elvisduru.com/blog/nestjs-jwt-authentication-refresh-token
+
+https://auth0.com/docs/secure/tokens/refresh-tokens
+
+https://github.com/auth0/express-jwt#revoked-tokens
+
+NestJS JWT - Access Tokens & Refresh Tokens - Ultimate Guide
+https://www.youtube.com/watch?v=uAKzFhE3rxU
+
+Building a Secure Signed JWT + others
+https://fusionauth.io/articles/tokens/building-a-secure-jwt
+https://fusionauth.io/articles/tokens/jwt-components-explained
+https://fusionauth.io/articles/tokens/pros-and-cons-of-jwts
+https://fusionauth.io/articles/tokens/revoking-jwts
+https://fusionauth.io/articles/tokens/tokens-microservices-boundaries
+
+I don’t see the point in Revoking or Blacklisting JWT
+https://www.dinochiesa.net/?p=1388
+
+Why JWTs Suck as Session Tokens
+https://developer.okta.com/blog/2017/08/17/why-jwts-suck-as-session-tokens
+
+https://medium.com/@zach.gollwitzer/everything-you-need-to-know-about-the-passport-local-passport-js-strategy-633bbab6195
+https://medium.com/swlh/everything-you-need-to-know-about-the-passport-jwt-passport-js-strategy-8b69f39014b0
+
+session tokens in nestjs:
+https://docs.nestjs.com/techniques/session

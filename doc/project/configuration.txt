@@ -1,0 +1,4 @@
+for information about configuration/dotenv:
+
+https://stackoverflow.com/a/72637235/312594
+https://dev.to/asjadanis/parsing-env-with-typescript-3jjm
