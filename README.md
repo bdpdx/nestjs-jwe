@@ -38,7 +38,7 @@ Fortunately, the [jose](https://github.com/panva/jose) project DOES support encr
 
 Unfortunately, there isn't a convenient jose wrapper like passport-jose or similar so I had to write my own.
 
-This project demonstrates a number of useful NestJS things and I intend to use it as a start project for NestJS frameworks in the future.
+This project demonstrates a number of useful NestJS things and I intend to use it as a starter project for my own NestJS projects in the future.
 
 In particular it demonstrates:
 
