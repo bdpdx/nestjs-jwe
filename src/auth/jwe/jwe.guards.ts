@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
 import { JweService } from 'src/auth/jwe/jwe.service';
 import { Observable } from 'rxjs';
+import { LoggerService } from 'src/logger/logger.service';
 
 // https://docs.nestjs.com/recipes/passport#enable-authentication-globally
 export const IS_PUBLIC_ROUTE_KEY = 'isPublicRoute';
@@ -14,6 +15,7 @@ export class JweAuthGuard extends AuthGuard('jwe') {
     constructor(
         private configService: ConfigService,
         private jweService: JweService,
+        private loggerService: LoggerService,
         private reflector: Reflector,
     ) {
         super();
@@ -41,6 +43,7 @@ export class JweAuthGuard extends AuthGuard('jwe') {
         return {
             configService: this.configService,
             jweService: this.jweService,
+            loggerService: this.loggerService,
         };
     }
 

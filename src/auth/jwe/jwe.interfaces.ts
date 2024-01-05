@@ -4,6 +4,7 @@ import { ModuleMetadata } from '@nestjs/common';
 export const JWE_MODULE_OPTIONS = 'JWE_MODULE_OPTIONS';
 
 export enum JweAlgorithm {
+    A256CGM = 'A256GCM',
     HS256 = 'HS256',
     RS256 = 'RS256',
 }

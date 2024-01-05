@@ -9,21 +9,18 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from 'src/users/users.module';
+import { LoggerModule } from 'src/logger/logger.module';
 
 @Module({
     controllers: [AuthController],
     exports: [AuthService],
     imports: [
         JweModule,
+        LoggerModule,
         PassportModule,
         SequelizeModule.forFeature([JweUser]),
         UsersModule,
     ],
-    providers: [
-        AuthService,
-        JweGlobalAuthGuard,
-        JweStrategy,
-        LocalStrategy,
-    ],
+    providers: [AuthService, JweGlobalAuthGuard, JweStrategy, LocalStrategy],
 })
 export class AuthModule {}

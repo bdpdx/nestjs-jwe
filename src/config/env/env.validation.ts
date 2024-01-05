@@ -73,26 +73,29 @@ export class EnvironmentVariables {
     @IsNotEmpty()
     JWE_ALGORITHM: string;
 
-    JWE_AUDIENCE: string = '';
+    // use with A256GCM
+    JWE_SECRET: string;
+
+    JWT_AUDIENCE: string = '';
 
     // the number of seconds a JWT token is valid
-    JWE_EXPIRATION_TIME: string = '15m';
+    JWT_EXPIRATION_TIME: string = '15m';
 
     @IsNotEmpty()
-    JWE_ISSUER: string;
+    JWT_ISSUER: string;
 
     // the JWE private key, needed if an RS* algorithm is used and
     // this server can create/sign JWEs.
-    JWE_PRIVATE_KEY: string;
+    JWT_PRIVATE_KEY: string;
 
     // the JWT public key, needed if an RS* algorithm is used and
     // this server can only verify JWEs. This field is unnecessary
-    // if JWE_PRIVATE_KEY is set.
-    JWE_PUBLIC_KEY: string;
+    // if JWT_PRIVATE_KEY is set.
+    JWT_PUBLIC_KEY: string;
 
     // the JWT secret, needed if an HS* algorithm is used.
     // should be 128 hex-encoded bytes.
-    JWE_SECRET: string;
+    JWT_SECRET: string;
 
     // set to a non-empty string to disable color in log output
     NO_COLOR = '';

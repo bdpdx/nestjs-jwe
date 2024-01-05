@@ -20,6 +20,7 @@ import { validate } from '../config/env/env.validation';
             validate: validate,
         }),
         JweModule,
+        // 2024.01.05 bd: make this global
         LoggerModule,
         SequelizeModule.forRootAsync({ useClass: SequelizeConfigService }),
         UsersModule,

@@ -1,14 +1,19 @@
 // https://advancedweb.hu/how-to-sign-verify-and-encrypt-jwts-in-node/
 // https://github.com/panva/jose/tree/main/docs
 
+import {
+    BadRequestException,
+    Injectable,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Injectable } from '@nestjs/common';
 import {
     JwePayload,
     JweProtectedHeader,
     JweVerifyResult,
 } from './jwe.interfaces';
 import { JweService } from './jwe.service';
+import { LoggerService } from 'src/logger/logger.service';
 import passport from 'passport';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
@@ -43,7 +48,9 @@ class Strategy {
         req: Request,
         options?: any,
     ): any {
-        const done = (err: any, user: any, info: any) => {
+        const loggerService: LoggerService = options.loggerService;
+
+        const done = (err: any, user: any = null, info: any = null) => {
             if (err) {
                 this.error(err);
             } else if (!user) {
@@ -53,20 +60,31 @@ class Strategy {
             }
         };
 
+        let jwe: string;
+
+        try {
+            jwe = this.jweFromRequest(req);
+        } catch (e) {
+            loggerService.warn('Invalid Authorization header');
+
+            done(e);
+            return;
+        }
+
         const promise = new Promise(async (resolve, reject) => {
             try {
                 const configService: ConfigService = options.configService;
-                const jwe = this.jweFromRequest(req);
                 const jweService: JweService = options.jweService;
 
                 const result: JweVerifyResult = await jweService.verify(jwe, {
-                    audience: configService.get('JWE_AUDIENCE'),
-                    issuer: configService.get('JWE_ISSUER'),
+                    audience: configService.get('JWT_AUDIENCE'),
+                    issuer: configService.get('JWT_ISSUER'),
                 });
 
                 resolve(result);
             } catch (e) {
-                reject(e);
+                loggerService.warn(`JWE verification failed: ${e}`);
+                reject(new UnauthorizedException());
             }
         });
 
@@ -98,7 +116,7 @@ class Strategy {
             }
         }
 
-        throw new Error('Invalid authorization header');
+        throw new BadRequestException();
     }
 }
 

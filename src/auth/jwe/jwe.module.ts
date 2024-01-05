@@ -48,20 +48,25 @@ async function jweModuleOptionsFactory(configService: ConfigService) {
     let key: JweKey;
 
     switch (algorithm) {
+        case JweAlgorithm.A256CGM:
+            const jweSecret = configService.getOrThrow('JWE_SECRET');
+            key = Uint8Array.from(Buffer.from(jweSecret, 'hex'));
+            break;
+
         case JweAlgorithm.HS256:
-            const secret = configService.getOrThrow('JWE_SECRET');
-            key = Uint8Array.from(Buffer.from(secret, 'hex'));
+            const jwtSecret = configService.getOrThrow('JWT_SECRET');
+            key = Uint8Array.from(Buffer.from(jwtSecret, 'hex'));
             break;
 
         case JweAlgorithm.RS256:
-            const privateKey = configService.get('JWE_PRIVATE_KEY');
+            const privateKey = configService.get('JWT_PRIVATE_KEY');
 
             if (privateKey) {
                 // application can sign and verify
                 key = await jose.importPKCS8(privateKey, algorithm);
             } else {
                 // application can verify only
-                const publicKey = configService.getOrThrow('JWE_PUBLIC_KEY');
+                const publicKey = configService.getOrThrow('JWT_PUBLIC_KEY');
                 key = await jose.importSPKI(publicKey, algorithm);
             }
             break;
@@ -70,9 +75,9 @@ async function jweModuleOptionsFactory(configService: ConfigService) {
             throw new InternalServerErrorException();
     }
 
-    const audience = configService.getOrThrow('JWE_AUDIENCE');
-    const expirationTime = configService.getOrThrow('JWE_EXPIRATION_TIME');
-    const issuer = configService.getOrThrow('JWE_ISSUER');
+    const audience = configService.getOrThrow('JWT_AUDIENCE');
+    const expirationTime = configService.getOrThrow('JWT_EXPIRATION_TIME');
+    const issuer = configService.getOrThrow('JWT_ISSUER');
     const signOptions = {
         audience: audience,
         expirationTime: expirationTime,
