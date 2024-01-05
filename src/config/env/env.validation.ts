@@ -81,16 +81,17 @@ export class EnvironmentVariables {
     @IsNotEmpty()
     JWE_ISSUER: string;
 
-    // the JWT private key
-    @IsNotEmpty()
+    // the JWE private key, needed if an RS* algorithm is used and
+    // this server can create/sign JWEs.
     JWE_PRIVATE_KEY: string;
 
-    // the JWT public key - probably not needed as I can derive it from the private key
-    @IsNotEmpty()
+    // the JWT public key, needed if an RS* algorithm is used and
+    // this server can only verify JWEs. This field is unnecessary
+    // if JWE_PRIVATE_KEY is set.
     JWE_PUBLIC_KEY: string;
 
-    // the JWT public key - probably not needed as I can derive it from the private key
-    @IsNotEmpty()
+    // the JWT secret, needed if an HS* algorithm is used.
+    // should be 128 hex-encoded bytes.
     JWE_SECRET: string;
 
     // set to a non-empty string to disable color in log output

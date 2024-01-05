@@ -54,9 +54,16 @@ async function jweModuleOptionsFactory(configService: ConfigService) {
             break;
 
         case JweAlgorithm.RS256:
-            const privateKey = configService.getOrThrow('JWE_PRIVATE_KEY');
-            // const publicKey = configService.getOrThrow('JWE_PUBLIC_KEY');
-            key = await jose.importPKCS8(privateKey, algorithm);
+            const privateKey = configService.get('JWE_PRIVATE_KEY');
+
+            if (privateKey) {
+                // application can sign and verify
+                key = await jose.importPKCS8(privateKey, algorithm);
+            } else {
+                // application can verify only
+                const publicKey = configService.getOrThrow('JWE_PUBLIC_KEY');
+                key = await jose.importSPKI(publicKey, algorithm);
+            }
             break;
 
         default:
