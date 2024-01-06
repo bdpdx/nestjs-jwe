@@ -2,7 +2,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JweGlobalAuthGuard } from './jwe/jwe.guards';
 import { JweModule } from 'src/auth/jwe/jwe.module';
-import { JweStrategy } from 'src/auth/jwe/jwe.strategy';
 import { JweUser } from './models/jwe-user.model';
 import { LocalStrategy } from './local/local.strategy';
 import { Module } from '@nestjs/common';
@@ -21,6 +20,6 @@ import { LoggerModule } from 'src/logger/logger.module';
         SequelizeModule.forFeature([JweUser]),
         UsersModule,
     ],
-    providers: [AuthService, JweGlobalAuthGuard, JweStrategy, LocalStrategy],
+    providers: [AuthService, JweGlobalAuthGuard, LocalStrategy],
 })
 export class AuthModule {}

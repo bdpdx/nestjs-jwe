@@ -3,9 +3,12 @@ import { InternalServerErrorException, Module } from '@nestjs/common';
 import * as jose from 'jose';
 import { JWE_MODULE_OPTIONS, JweAlgorithm, JweKey } from './jwe.interfaces';
 import { JweService } from './jwe.service';
+import { JweStrategy } from './jwe.strategy';
+import { LoggerModule } from 'src/logger/logger.module';
 
 @Module({
-    exports: [JweService],
+    exports: [JweService, JweStrategy],
+    imports: [LoggerModule],
     providers: [
         {
             inject: [ConfigService],
@@ -13,6 +16,7 @@ import { JweService } from './jwe.service';
             useFactory: jweModuleOptionsFactory,
         },
         JweService,
+        JweStrategy,
     ],
 })
 export class JweModule {

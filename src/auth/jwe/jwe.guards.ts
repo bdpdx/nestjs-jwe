@@ -39,13 +39,12 @@ export class JweAuthGuard extends AuthGuard('jwe') {
         return super.canActivate(context);
     }
 
+    /*
+    // additional options can be passed to JweStrategy.authenticate here
     getAuthenticateOptions(_context: ExecutionContext): object {
-        return {
-            configService: this.configService,
-            jweService: this.jweService,
-            loggerService: this.loggerService,
-        };
+        return { foo: 'bar' };
     }
+    */
 
     /*
     // can throw an exception here based on info or err arguments
@@ -70,7 +69,11 @@ export class JweAuthGuard extends AuthGuard('jwe') {
 // put all endpoints behind the JweAuthGuard. Endpoints
 // can be excepted by using @Public().
 //
-// If JweGlobalAuthGuard is not used, individual endpoints
+// Per the docs, a global auth guard can be registered in
+// any module, so stick it in AuthModule since that's what
+// it's most closely related to.
+//
+// If AppJweAuthGuard is not used, individual endpoints
 // can use JweAuthGuard with @UseGuards(JweAuthGuard).
 export const JweGlobalAuthGuard = {
     provide: APP_GUARD,

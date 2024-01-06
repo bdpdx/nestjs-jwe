@@ -39,17 +39,31 @@ class Strategy {
     name?: string;
 
     _validator: Validator;
+}
+
+@Injectable()
+export class JweStrategy extends PassportStrategy(Strategy) {
+    constructor(
+        private configService: ConfigService,
+        private jweService: JweService,
+        private loggerService: LoggerService,
+    ) {
+        super();
+
+        this.loggerService.setContext(JweStrategy.name);
+    }
 
     authenticate(
-        this: passport.StrategyCreated<
-            this,
-            this & passport.StrategyCreatedStatic
-        >,
+        this: JweStrategy &
+            passport.StrategyCreated<
+                this,
+                this & passport.StrategyCreatedStatic
+            >,
         req: Request,
-        options?: any,
+        // options can be passed from JweAuthGuard if desired by implementing
+        // JweAuthGuard:getAuthenticateOptions()
+        _options?: any,
     ): any {
-        const loggerService: LoggerService = options.loggerService;
-
         const done = (err: any, user: any = null, info: any = null) => {
             if (err) {
                 this.error(err);
@@ -63,9 +77,9 @@ class Strategy {
         let jwe: string;
 
         try {
-            jwe = this.jweFromRequest(req);
+            jwe = this._jweFromRequest(req);
         } catch (e) {
-            loggerService.warn('Invalid Authorization header');
+            this.loggerService.warn('Invalid Authorization header');
 
             done(e);
             return;
@@ -73,17 +87,17 @@ class Strategy {
 
         const promise = new Promise(async (resolve, reject) => {
             try {
-                const configService: ConfigService = options.configService;
-                const jweService: JweService = options.jweService;
-
-                const result: JweVerifyResult = await jweService.verify(jwe, {
-                    audience: configService.get('JWT_AUDIENCE'),
-                    issuer: configService.get('JWT_ISSUER'),
-                });
+                const result: JweVerifyResult = await this.jweService.verify(
+                    jwe,
+                    {
+                        audience: this.configService.get('JWT_AUDIENCE'),
+                        issuer: this.configService.get('JWT_ISSUER'),
+                    },
+                );
 
                 resolve(result);
             } catch (e) {
-                loggerService.warn(`JWE verification failed: ${e}`);
+                this.loggerService.warn(`JWE verification failed: ${e}`);
                 reject(new UnauthorizedException());
             }
         });
@@ -98,12 +112,26 @@ class Strategy {
             });
     }
 
+    async validate(
+        payload: JwePayload,
+        _protectedHeader: JweProtectedHeader,
+        _request: Request,
+    ) {
+        // 2024.01.04 bd: could throw here if iat is too old
+
+        return {
+            email: payload.email,
+            id: payload.sub,
+            // roles: payload.scope,
+        };
+    }
+
     // passport-jwt allows a number of configurable extraction methods.
     // I'm only going to support Bearer authentication for now so I'm
     // combining several paths from strategy.js, auth_header.js, and extract_jwt.js
     // into one function that pulls the token from the auth header.
     // see https://github.com/mikenicholson/passport-jwt/tree/master/lib
-    jweFromRequest(req: Request): string {
+    _jweFromRequest(req: Request): string {
         // express http converts all headers to lowercase
         const header = req.headers['authorization'];
 
@@ -117,22 +145,5 @@ class Strategy {
         }
 
         throw new BadRequestException();
-    }
-}
-
-@Injectable()
-export class JweStrategy extends PassportStrategy(Strategy) {
-    async validate(
-        payload: JwePayload,
-        _protectedHeader: JweProtectedHeader,
-        _request: Request,
-    ) {
-        // 2024.01.04 bd: could throw here if iat is too old
-
-        return {
-            email: payload.email,
-            id: payload.sub,
-            // roles: payload.scope,
-        };
     }
 }
