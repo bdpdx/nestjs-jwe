@@ -91,7 +91,7 @@ export class JweStrategy extends PassportStrategy(Strategy) {
                 this._validator(payload, protectedHeader, req, done);
             })
             .catch((err) => {
-                done(err, null, null);
+                done(err);
             });
     }
 
