@@ -67,8 +67,6 @@ export class JweStrategy extends PassportStrategy(Strategy) {
         try {
             jwe = this._jweFromRequest(req);
         } catch (e) {
-            this.loggerService.warn('Invalid Authorization header');
-
             done(e);
             return;
         }
@@ -124,6 +122,8 @@ export class JweStrategy extends PassportStrategy(Strategy) {
                 return matches[2];
             }
         }
+
+        this.loggerService.warn('Invalid Authorization header');
 
         throw new BadRequestException();
     }
