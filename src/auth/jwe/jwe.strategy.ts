@@ -66,8 +66,8 @@ export class JweStrategy extends PassportStrategy(Strategy) {
 
         try {
             jwe = this._jweFromRequest(req);
-        } catch (e) {
-            done(e);
+        } catch (err) {
+            done(err);
             return;
         }
 
@@ -79,8 +79,8 @@ export class JweStrategy extends PassportStrategy(Strategy) {
                 });
 
                 resolve(result);
-            } catch (e) {
-                this.loggerService.warn(`JWE verification failed: ${e}`);
+            } catch (err) {
+                this.loggerService.warn(`JWE verification failed: ${err}`);
                 reject(new UnauthorizedException());
             }
         });
