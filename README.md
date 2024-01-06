@@ -24,7 +24,7 @@
 
 ## Description
 
-2024.01.05 Brian Doyle:
+2024.01.05 bd:
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository with JWT + JWE support.
 
