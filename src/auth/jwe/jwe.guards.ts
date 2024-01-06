@@ -24,13 +24,11 @@ export class JweAuthGuard extends AuthGuard('jwe') {
     // https://docs.nestjs.com/recipes/passport#extending-guards
     // can implement custom authentication logic here, for example
     // call super.logIn(request) to establish a session.
-    canActivate(
-        context: ExecutionContext,
-    ): boolean | Promise<boolean> | Observable<boolean> {
-        const isPublic = this.reflector.getAllAndOverride<boolean>(
-            IS_PUBLIC_ROUTE_KEY,
-            [context.getHandler(), context.getClass()],
-        );
+    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+        const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_ROUTE_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
 
         if (isPublic) {
             return true;
@@ -75,7 +73,7 @@ export class JweAuthGuard extends AuthGuard('jwe') {
 //
 // If AppJweAuthGuard is not used, individual endpoints
 // can use JweAuthGuard with @UseGuards(JweAuthGuard).
-export const JweGlobalAuthGuard = {
+export const AppJweAuthGuard = {
     provide: APP_GUARD,
     useClass: JweAuthGuard,
 };

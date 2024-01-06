@@ -1,17 +1,9 @@
 // https://advancedweb.hu/how-to-sign-verify-and-encrypt-jwts-in-node/
 // https://giub.com/panva/jose/tree/main/docs
 
-import {
-    BadRequestException,
-    Injectable,
-    UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-    JwePayload,
-    JweProtectedHeader,
-    JweVerifyResult,
-} from './jwe.interfaces';
+import { JwePayload, JweProtectedHeader, JweVerifyResult } from './jwe.interfaces';
 import { JweService } from './jwe.service';
 import { LoggerService } from 'src/logger/logger.service';
 import passport from 'passport';
@@ -54,11 +46,7 @@ export class JweStrategy extends PassportStrategy(Strategy) {
     }
 
     authenticate(
-        this: JweStrategy &
-            passport.StrategyCreated<
-                this,
-                this & passport.StrategyCreatedStatic
-            >,
+        this: JweStrategy & passport.StrategyCreated<this, this & passport.StrategyCreatedStatic>,
         req: Request,
         // options can be passed from JweAuthGuard if desired by implementing
         // JweAuthGuard:getAuthenticateOptions()
@@ -87,13 +75,10 @@ export class JweStrategy extends PassportStrategy(Strategy) {
 
         const promise = new Promise(async (resolve, reject) => {
             try {
-                const result: JweVerifyResult = await this.jweService.verify(
-                    jwe,
-                    {
-                        audience: this.configService.get('JWT_AUDIENCE'),
-                        issuer: this.configService.get('JWT_ISSUER'),
-                    },
-                );
+                const result: JweVerifyResult = await this.jweService.verify(jwe, {
+                    audience: this.configService.get('JWT_AUDIENCE'),
+                    issuer: this.configService.get('JWT_ISSUER'),
+                });
 
                 resolve(result);
             } catch (e) {
@@ -112,11 +97,7 @@ export class JweStrategy extends PassportStrategy(Strategy) {
             });
     }
 
-    async validate(
-        payload: JwePayload,
-        _protectedHeader: JweProtectedHeader,
-        _request: Request,
-    ) {
+    async validate(payload: JwePayload, _protectedHeader: JweProtectedHeader, _request: Request) {
         // 2024.01.04 bd: could throw here if iat is too old
 
         return {

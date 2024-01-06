@@ -3,7 +3,7 @@ import { Request } from 'express';
 
 @Controller()
 export class AppController {
-    // @UseGuards(JweAuthGuard) // unnecessary if JweGlobalAuthGuard is registered
+    // @UseGuards(JweAuthGuard) // unnecessary if AppJweAuthGuard is registered
     @Get('profile')
     async profile(@Req() req: Request) {
         return req.user;

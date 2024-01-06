@@ -18,21 +18,15 @@ export class JweService {
         private options: JweModuleOptions,
     ) {}
 
-    async sign(
-        payload?: JwePayload,
-        options?: JweSignOptions,
-    ): Promise<string> {
+    async sign(payload?: JwePayload, options?: JweSignOptions): Promise<string> {
         const algorithm = this.options.algorithm;
         const signOptions = {
             audience: options?.audience ?? this.options.signOptions?.audience,
-            expirationTime:
-                options?.expirationTime ??
-                this.options.signOptions?.expirationTime,
+            expirationTime: options?.expirationTime ?? this.options.signOptions?.expirationTime,
             issuedAt: options?.issuedAt ?? this.options.signOptions?.issuedAt,
             issuer: options?.issuer ?? this.options.signOptions?.issuer,
             jwtId: options?.jwtId ?? this.options.signOptions?.jwtId,
-            notBefore:
-                options?.notBefore ?? this.options.signOptions?.notBefore,
+            notBefore: options?.notBefore ?? this.options.signOptions?.notBefore,
             subject: options?.subject ?? this.options.signOptions?.subject,
         };
 
@@ -44,10 +38,7 @@ export class JweService {
         }
     }
 
-    async verify(
-        jwt: string,
-        options: jose.JWTVerifyOptions = {},
-    ): Promise<JweVerifyResult> {
+    async verify(jwt: string, options: jose.JWTVerifyOptions = {}): Promise<JweVerifyResult> {
         const algorithm = this.options.algorithm;
 
         switch (algorithm) {
@@ -58,11 +49,7 @@ export class JweService {
                     keyManagementAlgorithms: ['dir'],
                 };
 
-                return await jose.jwtDecrypt(
-                    jwt,
-                    this.options.key,
-                    decryptOptions,
-                );
+                return await jose.jwtDecrypt(jwt, this.options.key, decryptOptions);
             default:
                 return await jose.jwtVerify(jwt, this.options.key, options);
         }
@@ -70,10 +57,7 @@ export class JweService {
 
     // private methods
 
-    async _encrypt(
-        payload?: JwePayload,
-        options?: JweSignOptions,
-    ): Promise<string> {
+    async _encrypt(payload?: JwePayload, options?: JweSignOptions): Promise<string> {
         const algorithm = this.options.algorithm;
         const jwe = new jose.EncryptJWT(payload);
 
@@ -91,8 +75,7 @@ export class JweService {
         if (!options) return;
 
         if (options.audience) jwe.setAudience(options.audience);
-        if (options.expirationTime)
-            jwe.setExpirationTime(options.expirationTime);
+        if (options.expirationTime) jwe.setExpirationTime(options.expirationTime);
         if (options.issuedAt !== false) {
             let iat: Date | number | string | undefined;
 
@@ -106,10 +89,7 @@ export class JweService {
         if (options.subject) jwe.setSubject(options.subject);
     }
 
-    async _sign(
-        payload?: JwePayload,
-        options?: JweSignOptions,
-    ): Promise<string> {
+    async _sign(payload?: JwePayload, options?: JweSignOptions): Promise<string> {
         const algorithm = this.options.algorithm;
         const jwt = new jose.SignJWT(payload);
 

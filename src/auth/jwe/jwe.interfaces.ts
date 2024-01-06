@@ -11,8 +11,7 @@ export enum JweAlgorithm {
 
 export type JweKey = jose.KeyLike | Uint8Array;
 
-export interface JweModuleMetadata
-    extends Pick<ModuleMetadata, 'imports' | 'providers'> {
+export interface JweModuleMetadata extends Pick<ModuleMetadata, 'imports' | 'providers'> {
     global?: boolean;
     signOptions?: JweSignOptions;
 }
