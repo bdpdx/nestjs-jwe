@@ -15,17 +15,10 @@ export async function hashPassword(
     const _salt = salt ?? crypto.randomBytes(16);
 
     const hash = await new Promise<Buffer>((resolve, reject) => {
-        crypto.pbkdf2(
-            password,
-            _salt,
-            _iterations,
-            32,
-            'sha256',
-            (err, hash) => {
-                if (err) reject(err);
-                else resolve(hash);
-            },
-        );
+        crypto.pbkdf2(password, _salt, _iterations, 32, 'sha256', (err, hash) => {
+            if (err) reject(err);
+            else resolve(hash);
+        });
     });
 
     return { hash, salt: _salt };

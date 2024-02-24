@@ -1,12 +1,6 @@
 import DatabaseDialect from 'src/common/enums/database-dialect.enum';
 import Environment from 'src/common/enums/environment.enum';
-import {
-    IsEnum,
-    IsInt,
-    IsNotEmpty,
-    IsNumber,
-    validateSync,
-} from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsNumber, validateSync } from 'class-validator';
 import { plainToInstance, Transform, Type } from 'class-transformer';
 
 function transformStringToBoolean(value: string): boolean {

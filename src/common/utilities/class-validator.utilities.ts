@@ -11,10 +11,7 @@ export function flattenValidationErrors(errors: ValidationError[]): string[] {
 
             if (property.length > 0) {
                 for (const index in values) {
-                    values[index] = values[index].replaceAll(
-                        /\$property/g,
-                        property,
-                    );
+                    values[index] = values[index].replaceAll(/\$property/g, property);
                 }
             }
 

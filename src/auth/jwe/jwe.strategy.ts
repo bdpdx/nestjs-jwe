@@ -21,7 +21,7 @@ class Strategy {
         const i = args.length - 1;
         if (i < 0) throw new TypeError('JweStrategy requires a verify handler');
 
-        this._validator = args[i];
+        this.validator = args[i];
 
         // here to be consistent with other passport strategies and in
         // case we want to pass options later.
@@ -30,7 +30,7 @@ class Strategy {
 
     name?: string;
 
-    _validator: Validator;
+    protected validator: Validator;
 }
 
 @Injectable()
@@ -65,7 +65,7 @@ export class JweStrategy extends PassportStrategy(Strategy) {
         let jwe: string;
 
         try {
-            jwe = this._jweFromRequest(req);
+            jwe = this.jweFromAuthorizationHeaderBearerToken(req);
         } catch (err) {
             done(err);
             return;
@@ -75,6 +75,8 @@ export class JweStrategy extends PassportStrategy(Strategy) {
             try {
                 const result: JweVerifyResult = await this.jweService.verify(jwe, {
                     audience: this.configService.get('JWT_AUDIENCE'),
+                    // set currentDate to new Date(0) to disable expiration time verification
+                    // currentDate: new Date(0),
                     issuer: this.configService.get('JWT_ISSUER'),
                 });
 
@@ -88,7 +90,7 @@ export class JweStrategy extends PassportStrategy(Strategy) {
         promise
             .then((verifyResult: JweVerifyResult) => {
                 const { payload, protectedHeader } = verifyResult;
-                this._validator(payload, protectedHeader, req, done);
+                this.validator(payload, protectedHeader, req, done);
             })
             .catch((err) => {
                 done(err);
@@ -110,7 +112,7 @@ export class JweStrategy extends PassportStrategy(Strategy) {
     // combining several paths from strategy.js, auth_header.js, and extract_jwt.js
     // into one function that pulls the token from the auth header.
     // see https://github.com/mikenicholson/passport-jwt/tree/master/lib
-    _jweFromRequest(req: Request): string {
+    private jweFromAuthorizationHeaderBearerToken(req: Request): string {
         // express http converts all headers to lowercase
         const header = req.headers['authorization'];
 

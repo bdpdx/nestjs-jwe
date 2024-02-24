@@ -32,7 +32,7 @@ export class JweService {
 
         switch (algorithm) {
             case JweAlgorithm.A256CGM:
-                return this._encrypt(payload, signOptions);
+                return this.encrypt(payload, signOptions);
             default:
                 return this._sign(payload, signOptions);
         }
@@ -57,7 +57,7 @@ export class JweService {
 
     // private methods
 
-    async _encrypt(payload?: JwePayload, options?: JweSignOptions): Promise<string> {
+    private async encrypt(payload?: JwePayload, options?: JweSignOptions): Promise<string> {
         const algorithm = this.options.algorithm;
         const jwe = new jose.EncryptJWT(payload);
 
@@ -66,12 +66,12 @@ export class JweService {
             enc: algorithm,
         });
 
-        this._setClaims(jwe, options);
+        this.setClaims(jwe, options);
 
         return jwe.encrypt(this.options.key);
     }
 
-    _setClaims(jwe: JweKind, options?: JweSignOptions) {
+    private setClaims(jwe: JweKind, options?: JweSignOptions) {
         if (!options) return;
 
         if (options.audience) jwe.setAudience(options.audience);
@@ -89,13 +89,13 @@ export class JweService {
         if (options.subject) jwe.setSubject(options.subject);
     }
 
-    async _sign(payload?: JwePayload, options?: JweSignOptions): Promise<string> {
+    private async _sign(payload?: JwePayload, options?: JweSignOptions): Promise<string> {
         const algorithm = this.options.algorithm;
         const jwt = new jose.SignJWT(payload);
 
         jwt.setProtectedHeader({ alg: algorithm });
 
-        this._setClaims(jwt, options);
+        this.setClaims(jwt, options);
 
         return jwt.sign(this.options.key);
     }
