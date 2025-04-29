@@ -4,13 +4,11 @@ import { Request } from 'express';
 @Controller()
 export class AppController {
     // @UseGuards(JweAuthGuard) // unnecessary if AppJweAuthGuard is registered
-    @Get('profile')
-    async profile(@Req() req: Request) {
-        return req.user;
-    }
-
-    @Get('public')
-    async public(@Req() _req: Request) {
-        return 'public';
+    @Get('test')
+    async getTest(@Req() req: Request) {
+        return {
+            message: 'hello, world!',
+            user: req.user,
+        };
     }
 }

@@ -99,12 +99,7 @@ export class JweStrategy extends PassportStrategy(Strategy) {
 
     async validate(payload: JwePayload, _protectedHeader: JweProtectedHeader, _request: Request) {
         // 2024.01.04 bd: could throw here if iat is too old
-
-        return {
-            email: payload.email,
-            id: payload.sub,
-            // roles: payload.scope,
-        };
+        return this.stripJwtClaims(payload);
     }
 
     // passport-jwt allows a number of configurable extraction methods.
@@ -128,5 +123,11 @@ export class JweStrategy extends PassportStrategy(Strategy) {
         this.loggerService.warn('Invalid Authorization header');
 
         throw new BadRequestException();
+    }
+
+    private stripJwtClaims(payload: Record<string, any>): Record<string, any> {
+        const { aud, exp, iat, iss, jti, nbf, sub, ...rest } = payload;
+
+        return rest;
     }
 }

@@ -18,6 +18,7 @@ export class JweService {
         private options: JweModuleOptions,
     ) {}
 
+    // sign() signs or encrypts the payload as appropriate given the app-wide JWE/JWT option.
     async sign(payload?: JwePayload, options?: JweSignOptions): Promise<string> {
         const algorithm = this.options.algorithm;
         const signOptions = {

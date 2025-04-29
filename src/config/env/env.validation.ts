@@ -1,4 +1,4 @@
-import DatabaseDialect from 'src/common/enums/database-dialect.enum';
+import { DatabaseDialect } from 'src/common/enums/database-dialect.enum';
 import Environment from 'src/common/enums/environment.enum';
 import { IsEnum, IsInt, IsNotEmpty, IsNumber, validateSync } from 'class-validator';
 import { plainToInstance, Transform, Type } from 'class-transformer';
@@ -33,11 +33,11 @@ export class EnvironmentVariables {
     BIND_PORT = 3000;
 
     // name of the database file
-    @IsNotEmpty()
     DB_DATABASE: string;
 
     // dialect of database we're connecting to
     @IsEnum(DatabaseDialect)
+    @IsNotEmpty()
     DB_DIALECT = DatabaseDialect.MYSQL;
 
     // hostname of the database to connect to

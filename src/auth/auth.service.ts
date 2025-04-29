@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import isEmail from 'validator/lib/isEmail';
 import { isPasswordMatched } from 'src/common/utilities/password.utilities';
-import { UsersService } from 'src/users/users.service';
 import { JweService } from 'src/auth/jwe/jwe.service';
+import { JWTPayload } from 'jose';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -11,27 +12,29 @@ export class AuthService {
         private usersService: UsersService,
     ) {}
 
-    async login(user: any) {
-        console.log('in AuthService.login(), generating jweToken');
+    async generateFirebaseAccessToken(payload: JWTPayload): Promise<string> {
+        return await this.jweService.sign(payload);
+    }
 
-        const payload = { email: user.email };
+    async localLogin(user: any) {
+        const payload = { email: user.email, id: user.id };
         const signOptions = { subject: user.id };
         const token = await this.jweService.sign(payload, signOptions);
 
         return { accessToken: token };
     }
 
-    async validateUser(email: string, password: string): Promise<any> {
+    async localValidateUser(email: string, password: string): Promise<any> {
         if (email.length < 1 || password.length < 1 || !isEmail(email)) {
             throw new BadRequestException();
         }
 
-        const user = await this.usersService.findOne(email);
+        const user = await this.usersService.getLocalUser(email);
 
         if (
             user != null &&
             user.hashedPassword != null &&
-            user.isActive &&
+            !user.isDisabled &&
             user.salt != null &&
             (await isPasswordMatched(password, user.hashedPassword, user.salt))
         ) {

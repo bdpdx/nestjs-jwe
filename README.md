@@ -54,6 +54,7 @@ In particular it demonstrates:
 - Using VSCode to develop a NestJS project
     - open the workspace, go to the debug tab, run it
     - breakpoints work, yay!
+- Using Firebase
 
 ## Installation
 
@@ -88,7 +89,16 @@ then:
 
 7. Run the app in dev mode as described below
 
-8. Open a terminal and connect to the NestJS server, then issue curl commands to test things out.
+8. Open a terminal and connect to the NestJS server, then use loginLocal.sh to test it.
+
+9. 2025.04.29: I added Firebase support today. To use it change DB_DIALECT='firebase' in .env then
+    - create a firebase app
+    - enable firebase admin for the app (the nest app only uses the firebase admin configuration)
+    - save the firebase service account json to .ignored/firebase-service-account.json
+    - copy the firebase api key from the main app config and save it to .ignored/firebase-api-key
+        (this is so loginFirebase.sh works)
+    - go into the app settings and enable cloud firestore
+    - test with loginFirebase.sh
 
 ```bash
 # first, test the login endpoint to get a JWT or JWE:
