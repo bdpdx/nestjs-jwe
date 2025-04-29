@@ -9,7 +9,7 @@ export enum JweAlgorithm {
     RS256 = 'RS256',
 }
 
-export type JweKey = jose.KeyLike | Uint8Array;
+export type JweKey = Uint8Array | object;
 
 export interface JweModuleMetadata extends Pick<ModuleMetadata, 'imports' | 'providers'> {
     global?: boolean;
@@ -18,7 +18,7 @@ export interface JweModuleMetadata extends Pick<ModuleMetadata, 'imports' | 'pro
 
 export interface JweModuleOptions {
     algorithm: string;
-    key: jose.KeyLike | Uint8Array;
+    key: JweKey;
     signOptions?: JweSignOptions;
 }
 
