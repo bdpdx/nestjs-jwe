@@ -24,14 +24,19 @@ echo "Firebase ID token retrieved."
 
 # Step 2: Call NestJS /auth/login to get JWE token
 echo "Requesting JWE token..."
-ACCESS_TOKEN=$(curl -s -X POST http://$HOST:$PORT/auth/login \
+RESPONSE=$(curl -s -X POST http://$HOST:$PORT/auth/login \
   -H "Authorization: Bearer $ID_TOKEN" \
-  -H "Content-Type: application/json" \
-  | jq -r '.accessToken')
+  -H "Content-Type: application/json")
+  
+ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.accessToken')
+REFRESH_TOKEN=$(echo "$RESPONSE" | jq -r '.refreshToken')
 
 if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" == "null" ]; then
     echo "Failed to retrieve JWE token"
     exit 1
+else
+	echo "JWE access token is $ACCESS_TOKEN"
+	echo "JWT refresh token is $REFRESH_TOKEN"
 fi
 
 echo "JWE token received."

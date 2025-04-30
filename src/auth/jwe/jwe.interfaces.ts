@@ -18,13 +18,19 @@ export interface JweModuleMetadata extends Pick<ModuleMetadata, 'imports' | 'pro
 
 export interface JweModuleOptions {
     algorithm: string;
+    jwtSecret: JweKey;
     key: JweKey;
+    refreshExpirationTime: string;
     signOptions?: JweSignOptions;
 }
 
 export type JweProtectedHeader = jose.JWTHeaderParameters;
 
-export type JwePayload = jose.JWTPayload;
+export interface JwePayload extends jose.JWTPayload {
+    email: string;
+    id: number | string;
+    role: 'admin' | 'user';
+}
 
 // https://github.com/panva/jose/blob/HEAD/docs/classes/jwt_sign.SignJWT.md
 export interface JweSignOptions {

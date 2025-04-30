@@ -73,7 +73,7 @@ export class EnvironmentVariables {
     JWT_AUDIENCE: string = '';
 
     // the number of seconds a JWT token is valid
-    JWT_EXPIRATION_TIME: string = '15m';
+    JWT_EXPIRATION_TIME: string = '7d';
 
     @IsNotEmpty()
     JWT_ISSUER: string;
@@ -86,6 +86,8 @@ export class EnvironmentVariables {
     // this server can only verify JWEs. This field is unnecessary
     // if JWT_PRIVATE_KEY is set.
     JWT_PUBLIC_KEY: string;
+
+    JWT_REFRESH_EXPIRATION_TIME: string = '30d';
 
     // the JWT secret, needed if an HS* algorithm is used.
     // should be 128 hex-encoded bytes.

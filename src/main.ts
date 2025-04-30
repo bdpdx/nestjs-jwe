@@ -9,19 +9,19 @@ import { NestFactory } from '@nestjs/core';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-    const configService = app.get(ConfigService<EnvironmentVariables, true>);
-    const loggerService = new LoggerService(configService);
+    const config = app.get(ConfigService<EnvironmentVariables, true>);
+    const log = new LoggerService(config);
 
-    const appName = configService.get('APP_NAME');
-    const bindHost = configService.get('BIND_HOST');
-    const bindPort = configService.get('BIND_PORT');
+    const appName = config.get('APP_NAME');
+    const bindHost = config.get('BIND_HOST');
+    const bindPort = config.get('BIND_PORT');
 
-    loggerService.setAppName(appName);
-    loggerService.setContext('App');
-    app.useLogger(loggerService);
+    log.setAppName(appName);
+    log.setContext('App');
+    app.useLogger(log);
 
     await app.listen(bindPort, bindHost, () => {
-        loggerService.log(`Listening on ${bindHost}:${bindPort}`);
+        log.log(`Listening on ${bindHost}:${bindPort}`);
     });
 }
 

@@ -46,31 +46,32 @@ export class JweModule {
     */
 }
 
-async function jweModuleOptionsFactory(configService: ConfigService) {
-    const algorithm = configService.getOrThrow('JWE_ALGORITHM');
+async function jweModuleOptionsFactory(config: ConfigService) {
+    const algorithm = config.getOrThrow('JWE_ALGORITHM');
+    const jwtSecret = config.getOrThrow('JWT_SECRET');
+    const jwtSecretKey = Uint8Array.from(Buffer.from(jwtSecret, 'hex'));
 
     let key: JweKey;
 
     switch (algorithm) {
         case JweAlgorithm.A256CGM:
-            const jweSecret = configService.getOrThrow('JWE_SECRET');
+            const jweSecret = config.getOrThrow('JWE_SECRET');
             key = Uint8Array.from(Buffer.from(jweSecret, 'hex'));
             break;
 
         case JweAlgorithm.HS256:
-            const jwtSecret = configService.getOrThrow('JWT_SECRET');
-            key = Uint8Array.from(Buffer.from(jwtSecret, 'hex'));
+            key = jwtSecretKey;
             break;
 
         case JweAlgorithm.RS256:
-            const privateKey = configService.get('JWT_PRIVATE_KEY');
+            const privateKey = config.get('JWT_PRIVATE_KEY');
 
             if (privateKey) {
                 // application can sign and verify
                 key = await jose.importPKCS8(privateKey, algorithm);
             } else {
                 // application can verify only
-                const publicKey = configService.getOrThrow('JWT_PUBLIC_KEY');
+                const publicKey = config.getOrThrow('JWT_PUBLIC_KEY');
                 key = await jose.importSPKI(publicKey, algorithm);
             }
             break;
@@ -79,9 +80,10 @@ async function jweModuleOptionsFactory(configService: ConfigService) {
             throw new InternalServerErrorException();
     }
 
-    const audience = configService.getOrThrow('JWT_AUDIENCE');
-    const expirationTime = configService.getOrThrow('JWT_EXPIRATION_TIME');
-    const issuer = configService.getOrThrow('JWT_ISSUER');
+    const audience = config.getOrThrow('JWT_AUDIENCE');
+    const expirationTime = config.getOrThrow('JWT_EXPIRATION_TIME');
+    const issuer = config.getOrThrow('JWT_ISSUER');
+    const refreshExpirationTime = config.getOrThrow('JWT_REFRESH_EXPIRATION_TIME');
     const signOptions = {
         audience: audience,
         expirationTime: expirationTime,
@@ -89,8 +91,10 @@ async function jweModuleOptionsFactory(configService: ConfigService) {
     };
 
     return {
-        algorithm: algorithm,
-        key: key,
-        signOptions: signOptions,
+        algorithm,
+        jwtSecret: jwtSecretKey,
+        key,
+        refreshExpirationTime,
+        signOptions,
     };
 }

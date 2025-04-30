@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import isEmail from 'validator/lib/isEmail';
 import { isPasswordMatched } from 'src/common/utilities/password.utilities';
+import { JwePayload } from './jwe/jwe.interfaces';
 import { JweService } from 'src/auth/jwe/jwe.service';
-import { JWTPayload } from 'jose';
+import { User } from 'src/users/user.interface';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -12,16 +13,18 @@ export class AuthService {
         private usersService: UsersService,
     ) {}
 
-    async generateFirebaseAccessToken(payload: JWTPayload): Promise<string> {
-        return await this.jweService.sign(payload);
+    async generateAccessToken(user: User): Promise<string> {
+        const payload = this.jwtPayload(user);
+        const signOptions = { subject: user.id.toString() };
+        const accessToken = await this.jweService.sign(payload, signOptions);
+
+        return accessToken;
     }
 
-    async localLogin(user: any) {
-        const payload = { email: user.email, id: user.id };
-        const signOptions = { subject: user.id };
-        const token = await this.jweService.sign(payload, signOptions);
+    async generateRefreshToken(user: User): Promise<string> {
+        const refreshToken = await this.jweService.signRefreshToken({ id: user.id });
 
-        return { accessToken: token };
+        return refreshToken;
     }
 
     async localValidateUser(email: string, password: string): Promise<any> {
@@ -45,5 +48,13 @@ export class AuthService {
         }
 
         return null;
+    }
+
+    jwtPayload(user: User): JwePayload {
+        return {
+            email: user.email,
+            id: user.id,
+            role: user.role,
+        };
     }
 }

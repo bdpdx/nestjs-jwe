@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DialectService {
-    constructor(private readonly configService: ConfigService) {}
+    constructor(private readonly config: ConfigService) {}
 
     get(): DatabaseDialect {
-        return this.configService.get<DatabaseDialect>('DB_DIALECT') ?? DatabaseDialect.MYSQL;
+        return this.config.get<DatabaseDialect>('DB_DIALECT') ?? DatabaseDialect.MYSQL;
     }
 
     isFirebase(): boolean {

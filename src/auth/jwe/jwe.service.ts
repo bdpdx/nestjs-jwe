@@ -1,8 +1,10 @@
+import { ConfigService } from '@nestjs/config';
 import { Inject, Injectable } from '@nestjs/common';
 import * as jose from 'jose';
 import {
     JWE_MODULE_OPTIONS,
     JweAlgorithm,
+    JweKey,
     JweModuleOptions,
     JwePayload,
     JweSignOptions,
@@ -15,7 +17,7 @@ type JweKind = jose.EncryptJWT | jose.SignJWT;
 export class JweService {
     constructor(
         @Inject(JWE_MODULE_OPTIONS)
-        private options: JweModuleOptions,
+        private readonly options: JweModuleOptions,
     ) {}
 
     // sign() signs or encrypts the payload as appropriate given the app-wide JWE/JWT option.
@@ -39,21 +41,40 @@ export class JweService {
         }
     }
 
+    async signRefreshToken(payload: { id: number | string }): Promise<string> {
+        return await new jose.SignJWT(payload)
+            .setProtectedHeader({ alg: 'HS256' })
+            .setIssuedAt()
+            .setExpirationTime(this.options.refreshExpirationTime)
+            .sign(this.options.jwtSecret);
+        }
+
     async verify(jwt: string, options: jose.JWTVerifyOptions = {}): Promise<JweVerifyResult> {
         const algorithm = this.options.algorithm;
+        let result;
 
         switch (algorithm) {
-            case JweAlgorithm.A256CGM:
+            case JweAlgorithm.A256CGM: {
                 const decryptOptions: jose.JWTDecryptOptions = {
                     ...options,
                     contentEncryptionAlgorithms: [algorithm],
                     keyManagementAlgorithms: ['dir'],
                 };
 
-                return await jose.jwtDecrypt(jwt, this.options.key, decryptOptions);
-            default:
-                return await jose.jwtVerify(jwt, this.options.key, options);
+                result = await jose.jwtDecrypt(jwt, this.options.key, decryptOptions);
+            } break;
+
+            default: {
+                result = await jose.jwtVerify(jwt, this.options.key, options);
+            } break;
         }
+        return result;
+    }
+
+    async verifyRefreshToken(jwt: string): Promise<{ payload: any }> {
+        const { payload } = await jose.jwtVerify(jwt, this.options.jwtSecret, { algorithms: ['HS256'] });
+
+        return { payload };
     }
 
     // private methods
@@ -69,7 +90,7 @@ export class JweService {
 
         this.setClaims(jwe, options);
 
-        return jwe.encrypt(this.options.key);
+        return await jwe.encrypt(this.options.key);
     }
 
     private setClaims(jwe: JweKind, options?: JweSignOptions) {

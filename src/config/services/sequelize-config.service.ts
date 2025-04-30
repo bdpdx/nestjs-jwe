@@ -19,14 +19,14 @@ export class SequelizeConfigService implements SequelizeOptionsFactory {
     private readonly syncDrop: boolean;
     private readonly username: string;
 
-    constructor(private readonly configService: ConfigService<EnvironmentVariables, true>) {
-        this.database = this.configService.get<string>('DB_DATABASE');
-        this.dialect = this.configService.get<Dialect>('DB_DIALECT');
-        this.host = this.configService.get<string>('DB_HOST');
-        this.password = this.configService.get<string>('DB_PASSWORD');
-        this.port = this.configService.get<number>('DB_PORT');
-        this.syncDrop = this.configService.get<Environment>('NODE_ENV') !== Environment.PRODUCTION;
-        this.username = this.configService.get<string>('DB_USERNAME');
+    constructor(private readonly config: ConfigService<EnvironmentVariables, true>) {
+        this.database = this.config.get<string>('DB_DATABASE');
+        this.dialect = this.config.get<Dialect>('DB_DIALECT');
+        this.host = this.config.get<string>('DB_HOST');
+        this.password = this.config.get<string>('DB_PASSWORD');
+        this.port = this.config.get<number>('DB_PORT');
+        this.syncDrop = this.config.get<Environment>('NODE_ENV') !== Environment.PRODUCTION;
+        this.username = this.config.get<string>('DB_USERNAME');
     }
 
     createSequelizeOptions(): SequelizeModuleOptions {

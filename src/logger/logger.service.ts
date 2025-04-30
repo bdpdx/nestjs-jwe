@@ -8,16 +8,16 @@ import { EnvironmentVariables } from 'src/config/env/env.validation';
 export class LoggerService extends ConsoleLogger {
     #appName = 'Nest';
 
-    constructor(private readonly configService: ConfigService<EnvironmentVariables, true>) {
+    constructor(private readonly config: ConfigService<EnvironmentVariables, true>) {
         super();
 
         // Values in the array can be any combination of 'log', 'fatal', 'error', 'warn', 'debug', and 'verbose'
         const logLevels: LogLevel[] = ['error', 'fatal', 'log', 'warn'];
 
-        if (this.configService.get<boolean>('ENABLE_VERBOSE_LOGGING')) {
+        if (this.config.get<boolean>('ENABLE_VERBOSE_LOGGING')) {
             logLevels.push('verbose');
         }
-        if (this.configService.get('NODE_ENV') === Environment.DEVELOPMENT) {
+        if (this.config.get('NODE_ENV') === Environment.DEVELOPMENT) {
             logLevels.push('debug');
         }
 

@@ -8,7 +8,7 @@ export const firebaseUserConverter: FirestoreDataConverter<User> = {
         return {
             createdAt: data.createdAt,
             email: data.email,
-            id: data.uid,
+            id: data.id,
             isDisabled: data.isDisabled,
             isEmailVerified: data.isEmailVerified,
             role: data.role,

@@ -16,21 +16,21 @@ export class UsersService implements OnModuleInit {
     private localUserModel?: typeof LocalUser;
 
     constructor(
-        private readonly configService: ConfigService,
-        private readonly dialectService: DialectService,
-        private readonly loggerService: LoggerService,
-        private readonly moduleRef: ModuleRef,
+        private readonly config: ConfigService,
+        private readonly dialect: DialectService,
+        private readonly log: LoggerService,
+        private readonly module: ModuleRef,
     ) {
-        this.loggerService.setContext(UsersService.name);
+        this.log.setContext(UsersService.name);
     }
 
     async createDefaultAdminUser() {
-        const email = this.configService.get('DEFAULT_USER_EMAIL');
-        const password = this.configService.get('DEFAULT_USER_PASSWORD');
+        const email = this.config.get('DEFAULT_USER_EMAIL');
+        const password = this.config.get('DEFAULT_USER_PASSWORD');
 
         let count;
 
-        if (this.dialectService.isFirebase()) {
+        if (this.dialect.isFirebase()) {
             count = (await this.firebase!.getAuth().listUsers(1)).users.length;
         } else {
             count = await this.localUserModel!.count();
@@ -38,17 +38,17 @@ export class UsersService implements OnModuleInit {
 
         if (count > 0) return;
 
-        this.loggerService.log('Creating default user');
+        this.log.log('Creating default user');
 
-        await this.createUser(email, password, true);
+        await this.createUser(email, password, true, true);
     }
 
     async createUser(email: string, password: string, isAdmin = false, isEmailVerified = false): Promise<User> {
-        this.loggerService.log(`Creating user ${email}`);
+        this.log.log(`Creating user ${email}`);
 
         const role = isAdmin ? 'admin' : 'user';
 
-        if (this.dialectService.isFirebase()) {
+        if (this.dialect.isFirebase()) {
             const auth = this.firebase!.getAuth();
             const authUser = await auth.createUser({
                 email,
@@ -56,9 +56,11 @@ export class UsersService implements OnModuleInit {
                 password,
             });
 
-            if (isAdmin) {
-                await auth.setCustomUserClaims(authUser.uid, { role: 'admin' });
-            }
+            const uid = authUser.uid;
+
+            if (!uid) throw new Error('Failed to get uid from Firebase');
+
+            if (isAdmin) await auth.setCustomUserClaims(uid, { role: 'admin' });
 
             const firestore = this.firebase!.getFirestore();
             const users = firestore.collection('users').withConverter(firebaseUserConverter);
@@ -66,13 +68,13 @@ export class UsersService implements OnModuleInit {
             const user: User = {
                 createdAt: new Date().toISOString(),
                 email,
-                id: authUser.uid,
+                id: uid,
                 isDisabled: false,
                 isEmailVerified,
                 role,
             };
 
-            await users.doc(authUser.uid).set(user, { merge: true });
+            await users.doc(uid).set(user, { merge: true });
 
             return user;
         } else {
@@ -91,7 +93,7 @@ export class UsersService implements OnModuleInit {
     }
 
     async getAllUsers(): Promise<User[]> {
-        if (this.dialectService.isFirebase()) {
+        if (this.dialect.isFirebase()) {
             const firestore = this.firebase!.getFirestore();
             const users = firestore.collection('users').withConverter(firebaseUserConverter);
             const snapshot = await users.get();
@@ -117,7 +119,7 @@ export class UsersService implements OnModuleInit {
     }
 
     async getUser(email: string): Promise<User | null> {
-        if (this.dialectService.isFirebase()) {
+        if (this.dialect.isFirebase()) {
             try {
                 const auth = this.firebase!.getAuth();
                 const authUser = await auth.getUserByEmail(email);
@@ -127,7 +129,7 @@ export class UsersService implements OnModuleInit {
 
                 if (doc.exists) return doc.data() ?? null;
             } catch (error) {
-                this.loggerService.warn(`failed to retrieve user '${email}': ${error.message}`);
+                this.log.warn(`failed to retrieve user '${email}': ${error.message}`);
             }
         } else {
             const user = this.getLocalUser(email);
@@ -138,18 +140,35 @@ export class UsersService implements OnModuleInit {
         return null;
     }
 
-    async onModuleInit() {
-        if (this.dialectService.isFirebase()) {
-            this.firebase = await this.moduleRef.get(FirebaseService, { strict: false });
+    async getUserById(id: number | string): Promise<User | null> {
+        if (this.dialect.isFirebase()) {
+            const auth = this.firebase!.getAuth(); // your lazy-loaded FirebaseService
+            const authUser = await auth.getUser(id.toString());
+            const firestore = this.firebase!.getFirestore();
+            const userDoc = await firestore.collection('users').doc(authUser.uid).get();
+    
+            if (!userDoc.exists) return null;
+    
+            return userDoc.data() as User;
         } else {
-            this.localUserModel = await this.moduleRef.get(getModelToken(LocalUser), { strict: false });
+            const localUser = await this.localUserModel!.findOne({ where: { id } });
+    
+            return localUser ? localUser.toUser() : null;
+        }
+    }
+    
+    async onModuleInit() {
+        if (this.dialect.isFirebase()) {
+            this.firebase = await this.module.get(FirebaseService, { strict: false });
+        } else {
+            this.localUserModel = await this.module.get(getModelToken(LocalUser), { strict: false });
         }
 
         await this.createDefaultAdminUser();
     }
 
     async remove(idOrUid: string): Promise<void> {
-        if (this.dialectService.isFirebase()) {
+        if (this.dialect.isFirebase()) {
             const auth = this.firebase!.getAuth();
             const firestore = this.firebase!.getFirestore();
 
